@@ -32,9 +32,20 @@ export const createState = (content?: JSON | string) => EditorState.create({
   doc: createDocument(content),
   plugins: [
     keymap(keyMap),
-    // keymap(baseKeymap),
+    keymap(baseKeymap),
     // @ts-ignore
     dropCursor({ class: "rvpe-dropcursor" }),
     history(),
   ],
 });
+
+/*
+baseKeymap ref:
+  "Enter": chainCommands(newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock),
+  "Mod-Enter": exitCode,
+  "Backspace": backspace,
+  "Mod-Backspace": backspace,
+  "Delete": del,
+  "Mod-Delete": del,
+  "Mod-a": selectAll,
+ */
