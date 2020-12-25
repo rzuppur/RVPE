@@ -21,7 +21,7 @@ const nodes: { [key: string]: NodeSpec } = {
   },
   heading: {
     content: "inline*",
-    marks: "",
+    marks: "italic",
     group: "block",
     selectable: false,
     defining: true,

@@ -3,8 +3,9 @@ import { EditorState, Transaction } from "prosemirror-state";
 import { toggleMark, selectParentNode } from "prosemirror-commands";
 import { undo, redo } from "prosemirror-history";
 import { undoInputRule } from "prosemirror-inputrules";
+import { toggleNodeType } from "./utils";
 
-type keyBindFn = (state: EditorState, dispatch?: (tr: Transaction) => void) => boolean;
+type keyBindFn = (state: EditorState, dispatch: (tr: Transaction) => void) => boolean;
 
 function bindKeys(schema: Schema) {
 
@@ -27,6 +28,9 @@ function bindKeys(schema: Schema) {
 
   bindKey("Mod-i", toggleMark(schema.marks.italic));
   bindKey("Mod-I", toggleMark(schema.marks.italic));
+
+  bindKey("Mod-Alt-t", toggleNodeType(schema.nodes.heading, schema.nodes.paragraph));
+  bindKey("Mod-Alt-T", toggleNodeType(schema.nodes.heading, schema.nodes.paragraph));
 
   bindKey("Shift-Enter", (state, dispatch) => {
     if (!dispatch) return false;
