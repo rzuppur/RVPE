@@ -5,7 +5,7 @@ import { keymap } from "prosemirror-keymap";
 import { history } from "prosemirror-history";
 import { dropCursor } from "prosemirror-dropcursor"; // Causes a decoration to show up at the drop position when something is dragged over the editor
 
-import { emptyDocument, keyMap, schema } from "@/schema";
+import { emptyDocument, keyMap, schema } from "./schema";
 
 export const createDocument = (content?: JSON | string) => {
   if (typeof content === "object") {
@@ -32,7 +32,7 @@ export const createState = (content?: JSON | string) => EditorState.create({
   doc: createDocument(content),
   plugins: [
     keymap(keyMap),
-    keymap(baseKeymap),
+    // keymap(baseKeymap),
     // @ts-ignore
     dropCursor({ class: "rvpe-dropcursor" }),
     history(),
