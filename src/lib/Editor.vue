@@ -3,6 +3,7 @@
 .editor
   h3 tere
   .editor-content(ref="editorContainer")
+  pre {{ jsonContent }}
   pre {{ marksInSelection }}
   pre {{ nodesInSelection }}
 
@@ -12,7 +13,7 @@
 
 import {defineComponent, onMounted, ref, Ref, watch} from "vue";
 import {EditorView} from "prosemirror-view";
-import {findParentNode, findSelectedNodeOfType} from "prosemirror-utils";
+import {findSelectedNodeOfType} from "prosemirror-utils";
 
 import {schema} from "./schema";
 import {createState} from "./state";
@@ -20,21 +21,22 @@ import {createState} from "./state";
 export default defineComponent({
   name: "Editor",
   props: {
-    content: Object,
+    modelValue: Object,
   },
-  emits: ["changed"],
+  emits: ["update:modelValue"],
   setup(props, {emit}) {
-    const jsonContent = ref(props.content);
-
+    const jsonContent = ref(props.modelValue);
     let state = createState(jsonContent.value as JSON);
 
     const editorContainer = ref(null);
+
     let view: EditorView;
     let marksInSelection: Ref<String[]> = ref([]);
     let nodesInSelection: Ref<String[]> = ref([]);
 
     onMounted(() => {
       if (!editorContainer.value) throw new Error("No element to mount editor to");
+
       view = new EditorView(editorContainer.value as unknown as Node, {
         state,
         dispatchTransaction(transaction) {
@@ -72,25 +74,24 @@ export default defineComponent({
             }
           });
 
-          /*
           if (transaction.before.content.findDiffStart(transaction.doc.content) !== null) {
             jsonContent.value = transaction.doc.toJSON();
           }
-          */
         },
       });
     });
 
-    watch(() => props.content, (newContent) => {
+    watch(() => props.modelValue, (newContent) => {
       if (JSON.stringify(newContent) === JSON.stringify(view.state.doc.toJSON())) {
         return; // Content is identical
       }
+
       state = createState(newContent as JSON);
       if (view) view.updateState(state);
     });
 
     watch(() => jsonContent.value, () => {
-      emit("changed", jsonContent.value);
+      emit("update:modelValue", jsonContent.value);
     });
 
     return {

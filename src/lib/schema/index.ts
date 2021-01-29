@@ -4,10 +4,8 @@ import nodes from "./nodes";
 import marks from "./marks";
 import bindKeys from "./keymap";
 
-const topNode = "doc";
-
 export const emptyDocument = {
-  type: topNode,
+  type: "doc",
   content: [{
     type: "paragraph",
   }],
