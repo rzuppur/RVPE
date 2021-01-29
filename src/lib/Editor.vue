@@ -2,16 +2,17 @@
 
 .editor
   h3 tere
-  pre active: {{ marksInSelection }}
   .editor-content(ref="editorContainer")
+  pre {{ marksInSelection }}
+  pre {{ nodesInSelection }}
 
 </template>
 
 <script lang="ts">
 
-import {defineComponent, onMounted, ref, watch} from "vue";
+import {defineComponent, onMounted, ref, Ref, watch} from "vue";
 import {EditorView} from "prosemirror-view";
-// import {findParentNode, findSelectedNodeOfType} from "prosemirror-utils";
+import {findParentNode, findSelectedNodeOfType} from "prosemirror-utils";
 
 import {schema} from "./schema";
 import {createState} from "./state";
@@ -19,22 +20,22 @@ import {createState} from "./state";
 export default defineComponent({
   name: "Editor",
   props: {
-    content: JSON,
+    content: Object,
   },
   emits: ["changed"],
   setup(props, {emit}) {
     const jsonContent = ref(props.content);
 
-    let state = createState(jsonContent.value);
+    let state = createState(jsonContent.value as JSON);
 
     const editorContainer = ref(null);
-    let view;
-    let marksInSelection = ref([]);
-    let nodesInSelection = ref([]);
+    let view: EditorView;
+    let marksInSelection: Ref<String[]> = ref([]);
+    let nodesInSelection: Ref<String[]> = ref([]);
 
     onMounted(() => {
       if (!editorContainer.value) throw new Error("No element to mount editor to");
-      view = new EditorView(editorContainer.value, {
+      view = new EditorView(editorContainer.value as unknown as Node, {
         state,
         dispatchTransaction(transaction) {
           const newState = view.state.apply(transaction);
@@ -45,24 +46,31 @@ export default defineComponent({
 
           const {from, $from, to, empty} = view.state.selection;
 
-          Object.entries(schema.marks).forEach(([name, mark]) => {
+          Object.entries(schema.marks).forEach(([markName, mark]) => {
             if (empty) {
               if (mark.isInSet(view.state.storedMarks || $from.marks())) {
-                marksInSelection.value.push(name);
+                marksInSelection.value.push(markName);
               }
             }
             if (view.state.doc.rangeHasMark(from, to, mark)) {
-              marksInSelection.value.push(name);
+              marksInSelection.value.push(markName);
             }
           });
 
 
-          /*
-          Object.entries(schema.nodes).forEach(([name, node]) => {
-            const n = findSelectedNodeOfType(node)(view.state.selection);
-            console.log(n);
+          Object.entries(schema.nodes).forEach(([nodeName, nodeType]) => {
+            const node = findSelectedNodeOfType(nodeType)(view.state.selection);
+            if (node && node.node.type.name === nodeName) {
+              nodesInSelection.value.push(nodeName);
+            }
+
+            for (let i = $from.depth; i > 0; i -= 1) {
+              const n = $from.node(i);
+              if (n.type === nodeType) {
+                nodesInSelection.value.push(nodeName);
+              }
+            }
           });
-          */
 
           /*
           if (transaction.before.content.findDiffStart(transaction.doc.content) !== null) {
@@ -77,7 +85,7 @@ export default defineComponent({
       if (JSON.stringify(newContent) === JSON.stringify(view.state.doc.toJSON())) {
         return; // Content is identical
       }
-      state = createState(newContent);
+      state = createState(newContent as JSON);
       if (view) view.updateState(state);
     });
 
@@ -89,6 +97,7 @@ export default defineComponent({
       editorContainer,
       jsonContent,
       marksInSelection,
+      nodesInSelection,
     };
   },
 });
