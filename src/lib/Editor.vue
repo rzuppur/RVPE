@@ -1,93 +1,37 @@
 <template lang="pug">
 
 .editor
-  h3 tere
   .editor-content(ref="editorContainer")
-  pre {{ jsonContent }}
-  pre {{ marksInSelection }}
-  pre {{ nodesInSelection }}
 
 </template>
 
 <script lang="ts">
 
-import {defineComponent, onMounted, ref, Ref, watch} from "vue";
-import {EditorView} from "prosemirror-view";
-import {findSelectedNodeOfType} from "prosemirror-utils";
+import { defineComponent, onMounted, ref, watch } from "vue";
 
-import {schema} from "./schema";
-import {createState} from "./state";
+import Editor from "./editor";
 
 export default defineComponent({
   name: "Editor",
   props: {
     modelValue: Object,
   },
-  emits: ["update:modelValue"],
-  setup(props, {emit}) {
-    const jsonContent = ref(props.modelValue);
-    let state = createState(jsonContent.value as JSON);
-
+  emits: ["update:modelValue", "commands"],
+  setup(props, { emit }) {
     const editorContainer = ref(null);
+    const jsonContent = ref(props.modelValue);
 
-    let view: EditorView;
-    let marksInSelection: Ref<String[]> = ref([]);
-    let nodesInSelection: Ref<String[]> = ref([]);
+    const editor = new Editor(jsonContent.value as JSON);
+
+    //emit("commands", commands);
 
     onMounted(() => {
       if (!editorContainer.value) throw new Error("No element to mount editor to");
-
-      view = new EditorView(editorContainer.value as unknown as Node, {
-        state,
-        dispatchTransaction(transaction) {
-          const newState = view.state.apply(transaction);
-          view.updateState(newState);
-
-          marksInSelection.value = [];
-          nodesInSelection.value = [];
-
-          const {from, $from, to, empty} = view.state.selection;
-
-          Object.entries(schema.marks).forEach(([markName, mark]) => {
-            if (empty) {
-              if (mark.isInSet(view.state.storedMarks || $from.marks())) {
-                marksInSelection.value.push(markName);
-              }
-            }
-            if (view.state.doc.rangeHasMark(from, to, mark)) {
-              marksInSelection.value.push(markName);
-            }
-          });
-
-
-          Object.entries(schema.nodes).forEach(([nodeName, nodeType]) => {
-            const node = findSelectedNodeOfType(nodeType)(view.state.selection);
-            if (node && node.node.type.name === nodeName) {
-              nodesInSelection.value.push(nodeName);
-            }
-
-            for (let i = $from.depth; i > 0; i -= 1) {
-              const n = $from.node(i);
-              if (n.type === nodeType) {
-                nodesInSelection.value.push(nodeName);
-              }
-            }
-          });
-
-          if (transaction.before.content.findDiffStart(transaction.doc.content) !== null) {
-            jsonContent.value = transaction.doc.toJSON();
-          }
-        },
-      });
+      editor.mount(editorContainer.value as unknown as Node);
     });
 
     watch(() => props.modelValue, (newContent) => {
-      if (JSON.stringify(newContent) === JSON.stringify(view.state.doc.toJSON())) {
-        return; // Content is identical
-      }
-
-      state = createState(newContent as JSON);
-      if (view) view.updateState(state);
+      editor.setContent(newContent);
     });
 
     watch(() => jsonContent.value, () => {
@@ -97,8 +41,6 @@ export default defineComponent({
     return {
       editorContainer,
       jsonContent,
-      marksInSelection,
-      nodesInSelection,
     };
   },
 });
