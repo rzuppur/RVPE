@@ -27,7 +27,7 @@ export const createDocumentFromHTML = (content: string) => {
   return DOMParser.fromSchema(schema).parse(element as Node);
 };
 
-export const createState = (content?: JSON | string) => EditorState.create({
+export const createState = (content?: JSON) => EditorState.create({
   schema,
   doc: createDocument(content),
   plugins: [

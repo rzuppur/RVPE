@@ -1,4 +1,5 @@
 import { Schema } from "prosemirror-model";
+import { Keymap } from "prosemirror-commands";
 
 import nodes from "./nodes";
 import marks from "./marks";
@@ -12,4 +13,4 @@ export const emptyDocument = {
 };
 
 export const schema = new Schema({ nodes, marks });
-export const keyMap = bindKeys(schema);
+export const keyMap = bindKeys(schema) as Keymap;
