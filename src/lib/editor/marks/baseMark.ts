@@ -2,38 +2,48 @@ import { MarkSpec, Schema } from "prosemirror-model";
 import { Command } from "prosemirror-commands";
 
 export class BaseMark {
+  /**
+   * Indicates if mark is active in current selection
+   */
+  public isActive: boolean = false;
+
+  /**
+   * Command for toggling the mark in editor, returns true on success
+   */
+  public command?: () => boolean;
+
+  /**
+   * Name used in schema and in toolbar commands
+   */
   get name(): string {
-    /**
-     * Name used in schema and in toolbar commands
-     */
     return "";
   }
 
+  /**
+   * Prosemirror schema
+   */
   get schema(): MarkSpec {
-    /**
-     * Prosemirror schema
-     */
     return {};
   }
 
+  /**
+   * Key combinations to run the command on
+   */
   get keymaps(): string[] {
-    /**
-     * Key combinations to run the command on
-     */
     return [];
   }
 
+  /**
+   * Makes command available for toolbar
+   */
   get inToolbar(): boolean {
-    /**
-     * Makes command available for toolbar
-     */
     return false;
   }
 
+  /**
+   * Prosemirror command to toggle the mark
+   */
   getCommand(schema: Schema): Command {
-    /**
-     * Prosemirror command to toggle the mark
-     */
     return () => true;
   }
 }

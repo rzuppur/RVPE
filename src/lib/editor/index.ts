@@ -27,6 +27,7 @@ export default class Editor {
   private editorView?: EditorView;
 
   public onContentChange: (newContent: JSON) => void = () => {};
+  public onToolbarChange: (toolbar: any) => void = () => {};
 
   constructor(initialContent?: JSON) {
     this.marks = [
@@ -45,6 +46,24 @@ export default class Editor {
 
     this.editorSchema = this.createSchema();
     this.editorState = this.createState(initialContent);
+  }
+
+  private setMarkCommands(): void {
+    if (!this.editorView) throw new Error("rvpe: no editorView");
+    const editorView = this.editorView;
+
+    const runCommand = (command: Command): boolean => {
+      const success = command(editorView.state, editorView.dispatch);
+      editorView.focus();
+      return success;
+    }
+
+    this.marks.forEach(mark => {
+      const command = mark.getCommand(this.editorSchema);
+      mark.command = () => {
+        return runCommand(command);
+      };
+    });
   }
 
   private get keymap(): Keymap {
@@ -125,32 +144,62 @@ export default class Editor {
     return new Schema({ marks: this.marksSchema, nodes: this.nodesSchema });
   }
 
+  private get toolbar(): any {
+    const toolbarMarks = this.marks.filter(mark => mark.inToolbar)
+    return toolbarMarks.map(mark => {
+      return {
+        name: mark.name,
+        command: mark.command,
+        active: mark.isActive,
+      };
+    });
+  }
+
   private dispatchTransaction(transaction: Transaction) {
     if (!this.editorView) throw new Error("rvpe: no editorView");
 
+    /**
+     * Apply transaction
+     */
     const newState = this.editorView.state.apply(transaction);
     this.editorView.updateState(newState);
 
+    /**
+     * If document changed, run content changed callback
+     */
     if (transaction.before.content.findDiffStart(transaction.doc.content) !== null) {
       this.onContentChange(transaction.doc.toJSON() as JSON);
     }
-    /*
-    commands.value.map(command => command.active = false);
 
+    /**
+     * Update active marks and nodes
+     */
     const { from, $from, to, empty } = this.editorView.state.selection;
 
-    Object.entries(schema.marks).forEach(([markName, mark]) => {
-      if (!toolbarCommandNames.includes(markName)) return;
+    this.marks.forEach(mark => {
+      if (!this.editorView) throw new Error("rvpe: no editorView");
+
+      const schemaMark = this.editorSchema.marks[mark.name];
+      if (!schemaMark) throw new Error(`rvpe: mark ${mark.name} not found in schema`);
+
+      mark.isActive = false;
 
       if (empty) {
-        if (mark.isInSet(view.state.storedMarks || $from.marks())) {
-          commands.value.find(command => command.name === markName).active = true;
+        if (schemaMark.isInSet(this.editorView.state.storedMarks || $from.marks())) {
+          mark.isActive = true;
         }
       }
-      if (view.state.doc.rangeHasMark(from, to, mark)) {
-        commands.value.find(command => command.name === markName).active = true;
+
+      if (this.editorView.state.doc.rangeHasMark(from, to, schemaMark)) {
+        mark.isActive = true;
       }
     });
+
+    this.onToolbarChange(this.toolbar);
+
+
+    /*
+    commands.value.map(command => command.active = false);
 
     Object.entries(schema.nodes).forEach(([nodeName, nodeType]) => {
       if (!toolbarCommandNames.includes(nodeName)) return;
@@ -167,8 +216,6 @@ export default class Editor {
         }
       }
     });
-
-    //emit("commands", commands);
     */
   }
 
@@ -177,6 +224,11 @@ export default class Editor {
       state: this.editorState,
       dispatchTransaction: this.dispatchTransaction.bind(this),
     });
+
+    this.setMarkCommands();
+
+    this.onContentChange(this.editorView.state.doc.toJSON() as JSON);
+    this.onToolbarChange(this.toolbar);
   }
 
   public setContent(newContent: JSON): boolean {
@@ -191,20 +243,3 @@ export default class Editor {
     return true;
   }
 }
-
-/*
-const commands = ref([{
-  name: "bold",
-  active: false,
-  action: () => { toggleMark(schema.marks.bold)(view.state, view.dispatch); view.focus(); },
-}, {
-  name: "italic",
-  active: false,
-}, {
-  name: "heading",
-  active: false,
-}, {
-  name: "blockquote",
-  active: false,
-}]);
- */

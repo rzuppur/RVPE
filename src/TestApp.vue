@@ -1,12 +1,10 @@
 <template lang="pug">
 
-button(v-for="command in commands" :class="{ active: command.active }" @click="command.action") {{ command.name }}
+button(v-for="button in toolbar" :class="{ active: button.active }" @click="button.command") {{ button.name }}
 
-editor(v-model="json" @commands="setCommands")
+editor(v-model="json" @toolbar="setToolbar")
 
-pre commands: {{ commands }}
-
-//-textarea(v-model="text")
+//-pre {{ json }}
 
 </template>
 
@@ -24,7 +22,7 @@ export default defineComponent({
   data() {
     return {
       json: emptyDocument,
-      commands: [],
+      toolbar: [],
     };
   },
   computed: {
@@ -38,8 +36,8 @@ export default defineComponent({
     },
   },
   methods: {
-    setCommands(commands) {
-      this.commands = commands;
+    setToolbar(toolbar: any) {
+      this.toolbar = toolbar;
     }
   },
 });

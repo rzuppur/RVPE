@@ -16,29 +16,24 @@ export default defineComponent({
   props: {
     modelValue: Object,
   },
-  emits: ["update:modelValue", "commands"],
+  emits: ["update:modelValue", "toolbar"],
   setup(props, { emit }) {
-    const editorContainer = ref(null);
-    const jsonContent = ref(props.modelValue);
-
-    const editor = new Editor(jsonContent.value as JSON);
+    const editor = new Editor(props.modelValue as JSON);
     editor.onContentChange = (newContent: JSON) => {
-      jsonContent.value = newContent;
+      emit("update:modelValue", newContent);
+    };
+    editor.onToolbarChange = (newToolbar: any) => {
+      emit("toolbar", newToolbar);
     };
 
-    //emit("commands", commands);
-
+    const editorContainer = ref(null);
     onMounted(() => {
       if (!editorContainer.value) throw new Error("No element to mount editor to");
       editor.mount(editorContainer.value as unknown as Node);
     });
 
     watch(() => props.modelValue, (newContent) => {
-      editor.setContent(newContent as JSON || {});
-    });
-
-    watch(() => jsonContent.value, () => {
-      emit("update:modelValue", jsonContent.value);
+      editor.setContent(newContent as JSON);
     });
 
     return {
