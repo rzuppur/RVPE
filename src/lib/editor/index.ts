@@ -6,6 +6,7 @@ import { keymap } from "prosemirror-keymap";
 import { dropCursor } from "prosemirror-dropcursor";
 import { history, redo, undo } from "prosemirror-history";
 import { undoInputRule } from "prosemirror-inputrules";
+import { findSelectedNodeOfType } from "prosemirror-utils";
 
 import { Text, Doc, HardBreak, Paragraph, Blockquote, Heading, BaseNode } from "./nodes/";
 import { Bold, Italic, BaseMark } from "./marks/";
@@ -48,7 +49,7 @@ export default class Editor {
     this.editorState = this.createState(initialContent);
   }
 
-  private setMarkCommands(): void {
+  private setCommands(): void {
     if (!this.editorView) throw new Error("rvpe: no editorView");
     const editorView = this.editorView;
 
@@ -58,9 +59,9 @@ export default class Editor {
       return success;
     }
 
-    this.marks.forEach(mark => {
-      const command = mark.getCommand(this.editorSchema);
-      mark.command = () => {
+    [...this.marks, ...this.nodes].forEach(markOrNode => {
+      const command = markOrNode.getCommand(this.editorSchema);
+      markOrNode.command = () => {
         return runCommand(command);
       };
     });
@@ -145,24 +146,24 @@ export default class Editor {
   }
 
   private get toolbar(): any {
-    const toolbarMarks = this.marks.filter(mark => mark.inToolbar)
-    return toolbarMarks.map(mark => {
+    return [...this.marks, ...this.nodes].filter(markOrNode => markOrNode.inToolbar).map(markOrNode => {
       return {
-        name: mark.name,
-        command: mark.command,
-        active: mark.isActive,
+        name: markOrNode.name,
+        command: markOrNode.command,
+        active: markOrNode.isActive,
       };
     });
   }
 
   private dispatchTransaction(transaction: Transaction) {
     if (!this.editorView) throw new Error("rvpe: no editorView");
+    const editorView = this.editorView;
 
     /**
      * Apply transaction
      */
-    const newState = this.editorView.state.apply(transaction);
-    this.editorView.updateState(newState);
+    const newState = editorView.state.apply(transaction);
+    editorView.updateState(newState);
 
     /**
      * If document changed, run content changed callback
@@ -174,49 +175,45 @@ export default class Editor {
     /**
      * Update active marks and nodes
      */
-    const { from, $from, to, empty } = this.editorView.state.selection;
+    const { from, $from, to, empty } = editorView.state.selection;
 
     this.marks.forEach(mark => {
-      if (!this.editorView) throw new Error("rvpe: no editorView");
-
       const schemaMark = this.editorSchema.marks[mark.name];
       if (!schemaMark) throw new Error(`rvpe: mark ${mark.name} not found in schema`);
 
       mark.isActive = false;
 
       if (empty) {
-        if (schemaMark.isInSet(this.editorView.state.storedMarks || $from.marks())) {
+        if (schemaMark.isInSet(editorView.state.storedMarks || $from.marks())) {
           mark.isActive = true;
         }
       }
 
-      if (this.editorView.state.doc.rangeHasMark(from, to, schemaMark)) {
+      if (editorView.state.doc.rangeHasMark(from, to, schemaMark)) {
         mark.isActive = true;
       }
     });
 
-    this.onToolbarChange(this.toolbar);
+    this.nodes.forEach(node => {
+      const schemaNode = this.editorSchema.nodes[node.name];
+      if (!schemaNode) throw new Error(`rvpe: node ${node.name} not found in schema`);
 
+      node.isActive = false;
 
-    /*
-    commands.value.map(command => command.active = false);
-
-    Object.entries(schema.nodes).forEach(([nodeName, nodeType]) => {
-      if (!toolbarCommandNames.includes(nodeName)) return;
-
-      const node = findSelectedNodeOfType(nodeType)(view.state.selection);
-      if (node && node.node.type.name === nodeName) {
-        commands.value.find(command => command.name === nodeName).active = true;
+      const nodeInSelection = findSelectedNodeOfType(schemaNode)(editorView.state.selection);
+      if (nodeInSelection && nodeInSelection.node.type.name === node.name) {
+        node.isActive = true;
       }
 
       for (let i = $from.depth; i > 0; i -= 1) {
-        const n = $from.node(i);
-        if (n.type === nodeType) {
-          commands.value.find(command => command.name === nodeName).active = true;
+        const parentNode = $from.node(i);
+        if (parentNode.type === schemaNode) {
+          node.isActive = true;
         }
       }
     });
-    */
+
+    this.onToolbarChange(this.toolbar);
   }
 
   public mount(node: Node): void {
@@ -225,7 +222,7 @@ export default class Editor {
       dispatchTransaction: this.dispatchTransaction.bind(this),
     });
 
-    this.setMarkCommands();
+    this.setCommands();
 
     this.onContentChange(this.editorView.state.doc.toJSON() as JSON);
     this.onToolbarChange(this.toolbar);

@@ -3,6 +3,16 @@ import { Command } from "prosemirror-commands";
 
 export class BaseNode {
   /**
+   * Indicates if node is active in current selection
+   */
+  public isActive: boolean = false;
+
+  /**
+   * Command for toggling the node in editor, returns true on success
+   */
+  public command?: () => boolean;
+
+  /**
    * Name used in schema, for requirements and in toolbar commands
    */
   get name(): string {
