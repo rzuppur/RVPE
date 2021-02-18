@@ -26,6 +26,8 @@ export default class Editor {
   private editorState: EditorState;
   private editorView?: EditorView;
 
+  public onContentChange: (newContent: JSON) => void = () => {};
+
   constructor(initialContent?: JSON) {
     this.marks = [
       new Bold(),
@@ -129,6 +131,9 @@ export default class Editor {
     const newState = this.editorView.state.apply(transaction);
     this.editorView.updateState(newState);
 
+    if (transaction.before.content.findDiffStart(transaction.doc.content) !== null) {
+      this.onContentChange(transaction.doc.toJSON() as JSON);
+    }
     /*
     commands.value.map(command => command.active = false);
 
@@ -163,11 +168,8 @@ export default class Editor {
       }
     });
 
-    if (transaction.before.content.findDiffStart(transaction.doc.content) !== null) {
-      jsonContent.value = transaction.doc.toJSON();
-    }*/
-
     //emit("commands", commands);
+    */
   }
 
   public mount(node: Node): void {

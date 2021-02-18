@@ -22,6 +22,9 @@ export default defineComponent({
     const jsonContent = ref(props.modelValue);
 
     const editor = new Editor(jsonContent.value as JSON);
+    editor.onContentChange = (newContent: JSON) => {
+      jsonContent.value = newContent;
+    };
 
     //emit("commands", commands);
 
@@ -31,7 +34,7 @@ export default defineComponent({
     });
 
     watch(() => props.modelValue, (newContent) => {
-      editor.setContent(newContent);
+      editor.setContent(newContent as JSON || {});
     });
 
     watch(() => jsonContent.value, () => {
@@ -40,7 +43,6 @@ export default defineComponent({
 
     return {
       editorContainer,
-      jsonContent,
     };
   },
 });
