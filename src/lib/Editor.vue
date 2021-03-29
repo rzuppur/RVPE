@@ -7,7 +7,7 @@
 
 <script lang="ts">
 
-import { defineComponent, onMounted, ref, watch } from "vue";
+import { defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
 
 import Editor from "./editor";
 
@@ -32,6 +32,10 @@ export default defineComponent({
     onMounted(() => {
       if (!editorContainer.value) throw new Error("No element to mount editor to");
       editor.mount(editorContainer.value as unknown as Node);
+    });
+
+    onUnmounted(() => {
+      editor.destroy();
     });
 
     watch(() => props.modelValue, (newContent) => {

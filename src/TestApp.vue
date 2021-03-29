@@ -27,7 +27,7 @@ export default defineComponent({
   },
   computed: {
     jsonAsString() {
-      return JSON.stringify(this.editorJson);
+      return JSON.stringify(this.editorJson, null, 2);
     },
   },
   methods: {

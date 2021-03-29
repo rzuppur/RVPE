@@ -2,7 +2,7 @@
   "name": "@rzuppur/rvpe",
   "description": "Minimal rich text editor for Vue 3 based on ProseMirror",
   "author": "Reino Zuppur",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "license": "MIT",
   "files": [
     "dist/lib/*"
@@ -11,6 +11,7 @@
   "module": "dist/lib/rvpe.esm.js",
   "scripts": {
     "build": "rimraf dist && cross-env NODE_ENV=production rollup --config",
+    "prepublishOnly": "yarn run build",
     "dev": "vite"
   },
   "dependencies": {

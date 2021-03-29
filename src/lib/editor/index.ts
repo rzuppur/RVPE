@@ -239,4 +239,10 @@ export default class Editor {
     this.editorView.updateState(this.editorState);
     return true;
   }
+
+  public destroy(): void {
+    if (this.editorView) {
+      this.editorView.destroy();
+    }
+  }
 }
