@@ -4,7 +4,7 @@ import postCssPlugin from "rollup-plugin-postcss";
 import esbuildPlugin from "rollup-plugin-esbuild";
 
 export default {
-    input: "src/lib/index.ts",
+    input: "src/lib/Editor.vue",
     output: [{
         globals: {
             vue: "Vue"

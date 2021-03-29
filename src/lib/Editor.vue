@@ -11,6 +11,8 @@ import { defineComponent, onMounted, ref, watch } from "vue";
 
 import Editor from "./editor";
 
+export { emptyDocument } from "./editor";
+
 export default defineComponent({
   name: "Editor",
   props: {

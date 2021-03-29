@@ -4,8 +4,6 @@ button(v-for="button in toolbar" :class="{ active: button.active }" @click="butt
 
 editor(v-model="json" @toolbar="setToolbar")
 
-//-pre {{ json }}
-
 </template>
 
 <script lang="ts">
@@ -24,16 +22,6 @@ export default defineComponent({
       json: emptyDocument,
       toolbar: [],
     };
-  },
-  computed: {
-    text: {
-      get() {
-        return JSON.stringify(this.json);
-      },
-      set(val) {
-        this.json = JSON.parse(val);
-      }
-    },
   },
   methods: {
     setToolbar(toolbar: any) {
