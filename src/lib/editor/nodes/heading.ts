@@ -8,10 +8,6 @@ export default class Heading extends BaseNode {
     return "heading";
   }
 
-  get requirements() {
-    return ["paragraph"];
-  }
-
   get schema() {
     return {
       content: "inline*",

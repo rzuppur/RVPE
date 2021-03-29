@@ -13,17 +13,10 @@ export class BaseNode {
   public command?: () => boolean;
 
   /**
-   * Name used in schema, for requirements and in toolbar commands
+   * Name used in schema and in toolbar commands
    */
   get name(): string {
     return "";
-  }
-
-  /**
-   * Other node names this node depends on
-   */
-  get requirements(): string[] {
-    return [];
   }
 
   /**

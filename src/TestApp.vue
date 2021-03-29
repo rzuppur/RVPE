@@ -2,7 +2,9 @@
 
 button(v-for="button in toolbar" :class="{ active: button.active }" @click="button.command") {{ button.name }}
 
-editor(v-model="json" @toolbar="setToolbar")
+editor(v-model="editorJson" @toolbar="setToolbar")
+
+pre {{ jsonAsString }}
 
 </template>
 
@@ -19,9 +21,14 @@ export default defineComponent({
   },
   data() {
     return {
-      json: emptyDocument,
+      editorJson: emptyDocument,
       toolbar: [],
     };
+  },
+  computed: {
+    jsonAsString() {
+      return JSON.stringify(this.editorJson);
+    },
   },
   methods: {
     setToolbar(toolbar: any) {
