@@ -1,19 +1,37 @@
-# rvpe
+# RVPE
 
-## Project setup
-```
-yarn install
-```
+Minimal rich text editor for Vue 3 based on [ProseMirror](https://prosemirror.net/).
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+## Usage
+Install: `yarn add @rzuppur/rvpe`
 
-### Compiles and minifies for production
-```
-yarn build
-```
+Use in Vue component:
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+```vue
+<template>
+  <button v-for="b in toolbar" :style="{'font-weight': b.active ? 700 : 400}" @click="b.command">
+      {{ b.name }}
+  </button>
+  <editor v-model="editorJson" @toolbar="setToolbar"></editor>
+</template>
+
+<script lang="ts">
+  import {defineComponent} from "vue";
+  import Editor, {emptyDocument} from "@rzuppur/rvpe";
+
+  export default defineComponent({
+    data() {
+      return {
+        editorJson: emptyDocument,
+        toolbar: [],
+      };
+    },
+    components: { Editor },
+    methods: {
+      setToolbar(toolbar: any) {
+        this.toolbar = toolbar;
+      },
+    },
+  });
+</script>
+```
