@@ -2,6 +2,8 @@
 
 Minimal rich text editor for Vue 3 based on [ProseMirror](https://prosemirror.net/).
 
+[Demo](https://rvpe.netlify.app/)
+
 ## Usage
 Install: `yarn add @rzuppur/rvpe`
 
