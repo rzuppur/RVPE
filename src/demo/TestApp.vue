@@ -9,10 +9,10 @@ pre {{ jsonAsString }}
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
 
-import { emptyDocument } from "./lib/editor";
-import Editor from "./lib/Editor.vue";
+import { defineComponent } from "vue";
+import Editor from "../lib/Editor.vue";
+import { emptyDocument } from "../lib/editor";
 
 export default defineComponent({
   name: "TestApp",
@@ -36,6 +36,7 @@ export default defineComponent({
     }
   },
 });
+
 </script>
 
 <style lang="stylus">

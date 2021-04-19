@@ -5,6 +5,10 @@ Minimal rich text editor for Vue 3 based on [ProseMirror](https://prosemirror.ne
 ## Usage
 Install: `yarn add @rzuppur/rvpe`
 
+**Important:** add `"resolutions": {
+"prosemirror-model": "^1.13.3"
+}` to your package.json.
+
 Use in Vue component:
 
 ```vue
@@ -16,8 +20,8 @@ Use in Vue component:
 </template>
 
 <script lang="ts">
-  import {defineComponent} from "vue";
-  import Editor, {emptyDocument} from "@rzuppur/rvpe";
+  import { defineComponent } from "vue";
+  import Editor, { emptyDocument, ToolbarEntry } from "@rzuppur/rvpe";
 
   export default defineComponent({
     data() {
@@ -28,7 +32,7 @@ Use in Vue component:
     },
     components: { Editor },
     methods: {
-      setToolbar(toolbar: any) {
+      setToolbar(toolbar: ToolbarEntry[]) {
         this.toolbar = toolbar;
       },
     },

@@ -18,6 +18,12 @@ export const emptyDocument = {
   }],
 };
 
+export interface ToolbarEntry {
+  name: string,
+  command: () => void,
+  active: boolean,
+}
+
 
 export default class Editor {
   private marks: BaseMark[];
@@ -28,7 +34,7 @@ export default class Editor {
   private editorView?: EditorView;
 
   public onContentChange: (newContent: JSON) => void = () => {};
-  public onToolbarChange: (toolbar: any) => void = () => {};
+  public onToolbarChange: (toolbar: ToolbarEntry[]) => void = () => {};
 
   constructor(initialContent?: JSON) {
     this.marks = [
@@ -145,7 +151,7 @@ export default class Editor {
     return new Schema({ marks: this.marksSchema, nodes: this.nodesSchema });
   }
 
-  private get toolbar(): any {
+  private get toolbar(): ToolbarEntry[] {
     return [...this.marks, ...this.nodes].filter(markOrNode => markOrNode.inToolbar).map(markOrNode => {
       return {
         name: markOrNode.name,

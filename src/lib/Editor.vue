@@ -8,10 +8,7 @@
 <script lang="ts">
 
 import { defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
-
-import Editor from "./editor";
-
-export { emptyDocument } from "./editor";
+import Editor, { ToolbarEntry } from "./editor/index";
 
 export default defineComponent({
   name: "Editor",
@@ -24,7 +21,7 @@ export default defineComponent({
     editor.onContentChange = (newContent: JSON) => {
       emit("update:modelValue", newContent);
     };
-    editor.onToolbarChange = (newToolbar: any) => {
+    editor.onToolbarChange = (newToolbar: ToolbarEntry[]) => {
       emit("toolbar", newToolbar);
     };
 
@@ -60,7 +57,6 @@ export default defineComponent({
   -webkit-font-variant-ligatures none
   font-variant-ligatures none
   font-feature-settings "liga" 0
-  border 1px solid red
 
 .ProseMirror-selectednode
   outline 2px solid #8cf
