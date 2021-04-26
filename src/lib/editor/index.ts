@@ -6,10 +6,10 @@ import { keymap } from "prosemirror-keymap";
 import { dropCursor } from "prosemirror-dropcursor";
 import { history, redo, undo } from "prosemirror-history";
 import { undoInputRule } from "prosemirror-inputrules";
-import { findSelectedNodeOfType } from "prosemirror-utils";
 
 import { Text, Doc, HardBreak, Paragraph, Blockquote, Heading, BaseNode } from "./nodes/";
 import { Bold, Italic, BaseMark } from "./marks/";
+import { findSelectedNodeOfType } from "./utils";
 
 export const emptyDocument = {
   type: "doc",
