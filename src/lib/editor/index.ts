@@ -8,7 +8,7 @@ import { history, redo, undo } from "prosemirror-history";
 import { undoInputRule } from "prosemirror-inputrules";
 
 import { Text, Doc, HardBreak, Paragraph, Blockquote, Heading, BaseNode } from "./nodes/";
-import { Bold, Italic, BaseMark } from "./marks/";
+import { BaseMark, Bold, Italic, Link } from "./marks/";
 import { findSelectedNodeOfType } from "./utils";
 
 export const emptyDocument = {
@@ -40,6 +40,7 @@ export default class Editor {
     this.marks = [
       new Bold(),
       new Italic(),
+      new Link(),
     ];
 
     this.nodes = [

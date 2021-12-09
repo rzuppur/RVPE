@@ -4,4 +4,8 @@ export default {
   plugins: [
     vue(),
   ],
+  server: {
+    port: 8081,
+    open: true,
+  }
 };

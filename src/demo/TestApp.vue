@@ -45,4 +45,8 @@ button.active
   background #ddd
   font-weight 700
 
+.editor-content a
+  text-decoration underline
+  color blue
+
 </style>
