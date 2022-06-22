@@ -7,10 +7,6 @@ Minimal rich text editor for Vue 3 based on [ProseMirror](https://prosemirror.ne
 ## Usage
 Install: `yarn add @rzuppur/rvpe`
 
-**Important:** add `"resolutions": {
-"prosemirror-model": "^1.13.3"
-}` to your package.json.
-
 Use in Vue component:
 
 ```vue
