@@ -1,5 +1,5 @@
-import { DOMOutputSpecArray, Schema } from "prosemirror-model";
-import { EditorState, Transaction } from "prosemirror-state";
+import type { DOMOutputSpec, Schema } from "prosemirror-model";
+import type { EditorState, Transaction } from "prosemirror-state";
 
 import { BaseNode } from "./baseNode";
 
@@ -14,7 +14,7 @@ export default class HardBreak extends BaseNode {
       group: "inline",
       selectable: false,
       parseDOM: [{ tag: "br" }],
-      toDOM: () => ["br"] as DOMOutputSpecArray,
+      toDOM: () => ["br"] as DOMOutputSpec,
     };
   }
 

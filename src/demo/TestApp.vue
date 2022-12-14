@@ -12,7 +12,7 @@ pre {{ jsonAsString }}
 
 import { defineComponent } from "vue";
 import Editor from "../lib/Editor.vue";
-import { emptyDocument } from "../lib/editor";
+import { emptyDocument } from "../lib/editor/index";
 
 export default defineComponent({
   name: "TestApp",

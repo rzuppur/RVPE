@@ -1,4 +1,4 @@
-import { DOMOutputSpecArray, Schema } from "prosemirror-model";
+import type { DOMOutputSpec, Schema } from "prosemirror-model";
 
 import { BaseNode } from "./baseNode";
 import { toggleNodeType } from "../utils";
@@ -23,7 +23,7 @@ export default class Heading extends BaseNode {
         { tag: "h5" },
         { tag: "h6" },
       ],
-      toDOM: () => ["h1", { class: "rvpe-heading" }, 0] as DOMOutputSpecArray,
+      toDOM: () => ["h1", { class: "rvpe-heading" }, 0] as DOMOutputSpec,
     };
   }
 

@@ -1,5 +1,5 @@
-import { NodeSpec, Schema } from "prosemirror-model";
-import { Command } from "prosemirror-commands";
+import type { NodeSpec, Schema } from "prosemirror-model";
+import type { Command } from "prosemirror-state";
 
 export class BaseNode {
   /**

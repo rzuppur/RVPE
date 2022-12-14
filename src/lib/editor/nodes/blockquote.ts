@@ -1,7 +1,7 @@
-import { DOMOutputSpecArray, Schema } from "prosemirror-model";
+import type { DOMOutputSpec, Schema } from "prosemirror-model";
 
 import { BaseNode } from "./baseNode";
-import { toggleWrapInNode } from "../utils";
+import { toggleNodeType } from "../utils";
 
 export default class Blockquote extends BaseNode {
   get name() {
@@ -10,12 +10,12 @@ export default class Blockquote extends BaseNode {
 
   get schema() {
     return {
-      content: "block*",
+      content: "inline*",
       group: "block",
       selectable: false,
       defining: true,
       parseDOM: [{ tag: "blockquote" }],
-      toDOM: () => ["blockquote", 0] as DOMOutputSpecArray,
+      toDOM: () => ["blockquote", 0] as DOMOutputSpec,
     };
   }
 
@@ -28,6 +28,6 @@ export default class Blockquote extends BaseNode {
   }
 
   getCommand(schema: Schema) {
-    return toggleWrapInNode(schema.nodes.blockquote);
+    return toggleNodeType(schema.nodes.blockquote, schema.nodes.paragraph);
   }
 }

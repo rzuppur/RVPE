@@ -1,7 +1,7 @@
 import { Schema, Node as ProsemirrorNode, DOMParser } from "prosemirror-model";
-import { baseKeymap, Command, Keymap, selectParentNode } from "prosemirror-commands";
+import { baseKeymap, selectParentNode } from "prosemirror-commands";
 import { EditorView } from "prosemirror-view";
-import { EditorState, Transaction } from "prosemirror-state";
+import { Command, EditorState, Transaction } from "prosemirror-state";
 import { keymap } from "prosemirror-keymap";
 import { dropCursor } from "prosemirror-dropcursor";
 import { history, redo, undo } from "prosemirror-history";
@@ -33,14 +33,16 @@ export default class Editor {
   private editorState: EditorState;
   private editorView?: EditorView;
 
-  public onContentChange: (newContent: JSON) => void = () => {};
-  public onToolbarChange: (toolbar: ToolbarEntry[]) => void = () => {};
+  public onContentChange: (newContent: JSON) => void = () => {
+  };
+  public onToolbarChange: (toolbar: ToolbarEntry[]) => void = () => {
+  };
 
   constructor(initialContent?: JSON) {
     this.marks = [
+      new Link(),
       new Bold(),
       new Italic(),
-      new Link(),
     ];
 
     this.nodes = [
@@ -74,8 +76,8 @@ export default class Editor {
     });
   }
 
-  private get keymap(): Keymap {
-    const keymap: Keymap = {};
+  private get keymap(): any {
+    const keymap: any = {};
 
     keymap["Mod-z"] = undo;
     keymap["Shift-Mod-z"] = redo;
